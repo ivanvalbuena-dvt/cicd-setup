@@ -46,6 +46,7 @@ module "init" {
   region           = local.region
 }
 
+/* TODO: Uncomment this module after the project initialization
 module "framework" {
   source           = "../../modules/framework"
   config_path      = "./../../config"
@@ -56,4 +57,4 @@ module "framework" {
   default_region   = local.region
   appengine_region = local.appengine_region
 }
-
+*/
