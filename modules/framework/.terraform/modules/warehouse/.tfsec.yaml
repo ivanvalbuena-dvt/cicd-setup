@@ -1,0 +1,2 @@
+severity_overrides:
+  google-iam-no-user-granted-permissions: LOW

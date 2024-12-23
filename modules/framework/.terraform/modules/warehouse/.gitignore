@@ -1,0 +1,6 @@
+.terraform
+.terraform.lock.hcl
+!environments/**/.terraform.lock.hcl
+.DS_Store
+.terraform.lock.hcl
+.vscode

@@ -1,0 +1,14 @@
+BEGIN --noqa
+
+BEGIN TRANSACTION;
+
+${transactionQuery} --noqa
+
+COMMIT TRANSACTION;
+
+EXCEPTION --noqa
+WHEN ERROR THEN
+    ROLLBACK TRANSACTION;
+    RAISE USING MESSAGE = @@error.message; --noqa
+
+END;

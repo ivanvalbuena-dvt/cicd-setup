@@ -1,0 +1,74 @@
+substitutions:
+    _ENV: 'undefined'
+    _USECASE: 'undefined'
+    _INIT: 'false'
+    _APPLY_CHANGES: 'false'
+steps:
+- id: 'context'
+  name: 'alpine'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      echo "***********************"
+      echo "project : $PROJECT_ID"
+      echo "usecase : ${_USECASE}"
+      echo "branch  : $BRANCH_NAME"
+      echo "env     : ${_ENV}"
+      echo "***********************"
+- id: 'init backend bucket'
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: sh
+  args:
+  - '-c'
+  - |
+      if [ "${_INIT}" = 'true' ]; then
+        echo "***********************"
+        echo "init terraform Buckets"
+        echo "env     : ${_ENV}"
+        echo "***********************"
+        cd environments/init
+        chmod +x init.sh
+        ./init.sh $PROJECT_ID-${_USECASE} $PROJECT_ID
+      else
+        echo "*****************************************"
+        echo "Skipping init buckets"
+        echo "*****************************************"
+      fi
+- id: 'terraform init'
+  name: 'hashicorp/terraform:1.7.4'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      cd environments/${_ENV}
+      TF_IN_AUTOMATION=1 terraform init -input=false
+- id: 'terraform plan'
+  name: 'hashicorp/terraform:1.7.4'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      cd environments/${_ENV}
+      TF_IN_AUTOMATION=1 terraform plan -input=false -out changes.tfplan
+- id: 'terraform apply'
+  name: 'hashicorp/terraform:1.7.4'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      if [ "${_APPLY_CHANGES}" = 'true' ]; then
+        echo "*****************************************"
+        echo "Applying changes on live environment"
+        echo "*****************************************"
+        cd environments/${_ENV}
+        TF_IN_AUTOMATION=1 terraform apply -input=false -auto-approve changes.tfplan
+      else
+        echo "*****************************************"
+        echo "Skipping apply (DRY RUN)"
+        echo "*****************************************"
+      fi
+options:
+  substitution_option: 'ALLOW_LOOSE'
+  dynamic_substitutions: true
+  logging: CLOUD_LOGGING_ONLY
