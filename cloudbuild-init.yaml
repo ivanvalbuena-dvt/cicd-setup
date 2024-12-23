@@ -29,7 +29,7 @@ steps:
         echo "***********************"
         cd environments/init
         chmod +x init.sh
-        ./init.sh $PROJECT_ID $PROJECT_ID
+        ./init.sh $PROJECT_ID-${_USECASE} $PROJECT_ID
       else
         echo "*****************************************"
         echo "Skipping init buckets"
