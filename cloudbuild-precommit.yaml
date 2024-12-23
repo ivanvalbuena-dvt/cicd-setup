@@ -1,0 +1,57 @@
+substitutions:
+    _APPLY_CHANGES: 'false'
+    _ENV: 'undefined'
+    _USECASE: 'undefined'
+steps:
+- id: 'context'
+  name: 'alpine'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      echo "***********************"
+      echo "project : $PROJECT_ID"
+      echo "branch  : $BRANCH_NAME"
+      echo "env     : ${_ENV}"
+      echo "***********************"
+- id: 'pre-commit'
+  name: 'alpine'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      if [ "${_APPLY_CHANGES}" = 'true' ]; then
+        echo "*****************************************"
+        echo "Running pre-commits in ${_ENV}"
+        echo "*****************************************"
+        apk add --no-cache python3 py3-pip \
+        && apk add build-base \
+        && apk add python3-dev \
+        && apk add bash \
+        && apk --no-cache add unzip \
+        && apk --no-cache add curl \
+        && apk --no-cache add git \
+        && wget https://releases.hashicorp.com/terraform/1.7.4/terraform_1.7.4_linux_amd64.zip \
+        && unzip terraform_1.7.4_linux_amd64.zip -d /usr/local/bin/ \
+        && chmod +x /usr/local/bin/terraform \
+        && VIRTUAL_ENV=/opt/venv \
+        && python3 -m venv $$VIRTUAL_ENV \
+        && PATH="$$VIRTUAL_ENV/bin:$$PATH" \
+        && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | TFLINT_VERSION=v0.45.0 bash \
+        && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.3 \
+        && apk add --update nodejs npm \
+        && apk add --update npm \
+        && npm i -g @dataform/cli@^2.8.4 \
+        && pip install pre-commit --upgrade \
+        && pre-commit --version \
+        && git init . \
+        && pre-commit install \
+        && pre-commit run --all-files
+      else
+        echo "*****************************************"
+        echo "Skipping pre-commits in ${_ENV}"
+        echo "*****************************************"
+      fi
+logsBucket: "gs://${PROJECT_ID}-gcs-cloud-build-logs/"
+options:
+  logging: GCS_ONLY
