@@ -4,6 +4,7 @@ variable "usecase" { type = string }
 variable "repo_name" { type = string }
 variable "orga_name" { type = string }
 variable "apis_to_activate" { type = list(any) }
+variable "region" { type = string }
 
 terraform {
   required_version = ">= 1.7.4, < 2.0.0"
@@ -73,6 +74,7 @@ resource "google_cloudbuild_trigger" "tf-plan" {
   filename        = "cloudbuild.yaml"
   service_account = google_service_account.deploy.id
   depends_on      = [google_project_service.apis, google_service_account.deploy]
+  location        = var.region
 }
 
 # Trigger to apply changes when a PR is merged into develop (dv or qa) or integration (np)
@@ -97,6 +99,7 @@ resource "google_cloudbuild_trigger" "tf-apply" {
   filename        = "cloudbuild.yaml"
   service_account = google_service_account.deploy.id
   depends_on      = [google_project_service.apis, google_service_account.deploy, google_cloudbuild_trigger.tf-plan]
+  location        = var.region
 }
 
 # Trigger to apply changes when a tag is created (pd)
@@ -121,6 +124,7 @@ resource "google_cloudbuild_trigger" "tf-apply-release" {
   filename        = "cloudbuild.yaml"
   service_account = google_service_account.deploy.id
   depends_on      = [google_project_service.apis, google_service_account.deploy, google_cloudbuild_trigger.tf-plan]
+  location        = var.region
 }
 
 # Trigger to run pre-commits when a PR is opened against develop (dv and qa), integration (np) or main (pd) branches
@@ -142,4 +146,5 @@ resource "google_cloudbuild_trigger" "test-precommit" {
   description     = "Triggers pre-commit tests when a Pull Request targeting ${local.env_branch[var.env]} branch is open"
   filename        = "cloudbuild-precommit.yaml"
   service_account = google_service_account.deploy.id
+  location        = var.region
 }
