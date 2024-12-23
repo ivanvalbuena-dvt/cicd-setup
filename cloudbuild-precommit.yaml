@@ -52,6 +52,6 @@ steps:
         echo "Skipping pre-commits in ${_ENV}"
         echo "*****************************************"
       fi
-logsBucket: "gs://${PROJECT_ID}-gcs-cloud-build-logs/"
+logsBucket: "gs://${PROJECT_ID}-${_USECASE}-gcs-cloud-build-logs/"
 options:
   logging: GCS_ONLY

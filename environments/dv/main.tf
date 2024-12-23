@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.7.4, < 2.0.0"
   backend "gcs" {
-    bucket = "ivan-valbuena-sandbox-01-gcs-tfstate" #TODO: Change to your bucket name
+    bucket = "ivan-valbuena-sandbox-01-cicd-gcs-tfstate" #TODO: Change to your bucket name
   }
   required_providers {
     google = {
