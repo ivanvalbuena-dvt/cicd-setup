@@ -15,9 +15,6 @@ steps:
       echo "env     : ${_ENV}"
       echo "mode    : $([[ ${_APPLY_CHANGES} = 'true' ]] && echo 'LIVE' || echo 'DRY RUN')"
       echo "***********************"
-
-  volumes:
-  - name: 'terraform'
 - id: 'terraform init'
   name: 'hashicorp/terraform:1.7.4'
   entrypoint: 'sh'
@@ -26,8 +23,6 @@ steps:
   - |
       cd environments/${_ENV}
       TF_IN_AUTOMATION=1 terraform init -input=false
-  volumes:
-  - name: 'terraform'
 - id: 'terraform plan'
   name: 'hashicorp/terraform:1.7.4'
   entrypoint: 'sh'
