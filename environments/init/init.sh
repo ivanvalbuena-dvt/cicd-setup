@@ -5,5 +5,5 @@ gsutil mb -l eu -p $2 gs://$TERRAFORM_BUCKET # Create Terraform bucket
 gsutil versioning set on gs://$TERRAFORM_BUCKET # Set versioning on
 
 gsutil mb -l eu -p $2 gs://$1-gcs-cloud-build-logs # Create Cloud Run Logs bucket
-gsutil versioning set on gs://$1-gcs-cloud-build-logs # Set versioning on
+gsutil versioning set on gs://$1-gcs-cloud-build-logs # Set versioning ons
 gsutil lifecycle set ./log-bucket-config.json gs://$1-gcs-cloud-build-logs
