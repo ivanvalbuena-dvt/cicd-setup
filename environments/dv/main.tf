@@ -45,7 +45,7 @@ module "init" {
   repo_name        = local.repo_name
   region           = local.region
 }
-
+/*
 module "framework" {
   source           = "../../modules/framework"
   config_path      = "./../../config"
@@ -56,4 +56,4 @@ module "framework" {
   default_region   = local.region
   appengine_region = local.appengine_region
 }
-
+*/
